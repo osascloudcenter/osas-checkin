@@ -1,39 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>OSAS Check-in</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body style="font-family:Arial;text-align:center;padding:40px">
-
-<h2>OSAS Check-in</h2>
-<p>Klik tombol untuk absen</p>
-
-<button id="btn" style="font-size:18px;padding:12px 20px">
-📍 Check-in Sekarang
-</button>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-const tg = window.Telegram.WebApp;
+  const tg = window.Telegram.WebApp;
+  const btn = document.getElementById("btn");
+  const status = document.getElementById("status");
 
-document.getElementById("btn").onclick = () => {
-  navigator.geolocation.getCurrentPosition(pos => {
+  btn.onclick = () => {
 
-    const data = {
-      lat: pos.coords.latitude,
-      lng: pos.coords.longitude,
-      time: Date.now()
-    };
+    btn.disabled = true;
+    btn.innerText = "⏳ Mengambil lokasi...";
+    status.innerText = "📡 Mengakses GPS...";
 
-    tg.sendData(JSON.stringify(data));
-    tg.close();
+    navigator.geolocation.getCurrentPosition(
 
-  }, err => {
-    alert("Aktifkan GPS dulu");
-  });
-};
+      pos => {
+
+        const data = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          time: Date.now()
+        };
+
+        btn.innerText = "⏳ Mengirim...";
+        status.innerText = "📤 Mengirim data ke server...";
+
+        tg.sendData(JSON.stringify(data));
+
+        // Tampilkan sukses dulu
+        setTimeout(() => {
+          status.innerText = "✅ Check-in berhasil";
+          btn.innerText = "Selesai";
+        }, 300);
+
+        // Tutup otomatis
+        setTimeout(() => {
+          tg.close();
+        }, 900);
+
+      },
+
+      err => {
+
+        btn.disabled = false;
+        btn.innerText = "📍 Check-in Sekarang";
+        status.innerText = "❌ GPS tidak aktif";
+
+        alert("Mohon aktifkan GPS untuk melakukan check-in");
+
+      }
+
+    );
+
+  };
 </script>
-
-</body>
-</html>
