@@ -1,53 +1,156 @@
-<script>
-  const tg = window.Telegram.WebApp;
-  const btn = document.getElementById("btn");
-  const status = document.getElementById("status");
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  btn.onclick = () => {
+  <title>OSAS Check-in</title>
 
-    btn.disabled = true;
-    btn.innerText = "⏳ Mengambil lokasi...";
-    status.innerText = "📡 Mengakses GPS...";
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    navigator.geolocation.getCurrentPosition(
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-      pos => {
+    .card {
+      background: #ffffff;
+      width: 90%;
+      max-width: 360px;
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+    }
 
-        const data = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          time: Date.now()
-        };
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
 
-        btn.innerText = "⏳ Mengirim...";
-        status.innerText = "📤 Mengirim data ke server...";
+    .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+    }
 
-        tg.sendData(JSON.stringify(data));
+    .status {
+      font-size: 14px;
+      margin-bottom: 18px;
+      color: #475569;
+    }
 
-        // Tampilkan sukses dulu
-        setTimeout(() => {
-          status.innerText = "✅ Check-in berhasil";
-          btn.innerText = "Selesai";
-        }, 300);
+    button {
+      width: 100%;
+      background: #2563eb;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
 
-        // Tutup otomatis
-        setTimeout(() => {
-          tg.close();
-        }, 900);
+    button:hover {
+      background: #1d4ed8;
+    }
 
-      },
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
 
-      err => {
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
 
-        btn.disabled = false;
-        btn.innerText = "📍 Check-in Sekarang";
-        status.innerText = "❌ GPS tidak aktif";
+<body>
 
-        alert("Mohon aktifkan GPS untuk melakukan check-in");
+  <div class="card">
 
-      }
+    <div class="logo">OSAS</div>
+    <div class="subtitle">One Stop Automation System</div>
 
-    );
+    <div class="status" id="status">
+      Klik tombol untuk melakukan check-in
+    </div>
 
-  };
-</script>
+    <button id="btn">
+      📍 Check-in Sekarang
+    </button>
+
+    <div class="footer">
+      Powered by OSAS
+    </div>
+
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    const btn = document.getElementById("btn");
+    const status = document.getElementById("status");
+
+    btn.onclick = () => {
+
+      btn.disabled = true;
+      btn.innerText = "⏳ Mengambil lokasi...";
+      status.innerText = "📡 Mengakses GPS...";
+
+      navigator.geolocation.getCurrentPosition(
+
+        pos => {
+
+          const data = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            time: Date.now()
+          };
+
+          btn.innerText = "⏳ Mengirim...";
+          status.innerText = "📤 Mengirim data ke server...";
+
+          tg.sendData(JSON.stringify(data));
+
+          setTimeout(() => {
+            status.innerText = "✅ Check-in berhasil";
+            btn.innerText = "Selesai";
+          }, 300);
+
+          setTimeout(() => {
+            tg.close();
+          }, 900);
+
+        },
+
+        err => {
+
+          btn.disabled = false;
+          btn.innerText = "📍 Check-in Sekarang";
+          status.innerText = "❌ GPS tidak aktif";
+
+          alert("Mohon aktifkan GPS untuk melakukan check-in");
+
+        }
+
+      );
+
+    };
+  </script>
+
+</body>
+</html>
